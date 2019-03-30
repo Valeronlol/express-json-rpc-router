@@ -1,0 +1,34 @@
+{
+  "name": "express-json-rpc-router",
+  "description": "Json-rpc middleware router for express",
+  "version": "0.0.1",
+  "author": "Valerii Kuzivanov <valerii.kuzivanov@gmail.com>",
+  "keywords": ["router", "json rpc", "express"],
+  "license": "MIT",
+  "repository": "express-json-rpc-router",
+  "main": "index.js",
+  "devDependencies": {
+    "eslint": "5.15.3",
+    "eslint-config-standard": "12.0.0",
+    "eslint-plugin-import": "2.16.0",
+    "eslint-plugin-markdown": "1.0.0",
+    "eslint-plugin-node": "8.0.1",
+    "eslint-plugin-promise": "4.0.1",
+    "eslint-plugin-standard": "4.0.0"
+  },
+  "engines": {
+    "node": ">= 8.0"
+  },
+  "files": [
+    "index.js",
+    "lib/",
+    "HISTORY.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "json-rpc",
+    "router",
+    "middleware",
+    "express"
+  ]
+}
