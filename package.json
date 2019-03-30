@@ -3,7 +3,6 @@
   "description": "Json-rpc middleware router for express",
   "version": "0.0.1",
   "author": "Valerii Kuzivanov <valerii.kuzivanov@gmail.com>",
-  "keywords": ["router", "json rpc", "express"],
   "license": "MIT",
   "repository": "express-json-rpc-router",
   "main": "index.js",
@@ -29,6 +28,11 @@
     "json-rpc",
     "router",
     "middleware",
+    "jsonrpc2",
     "express"
-  ]
+  ],
+  "bugs": {
+    "url": "https://github.com/Valeronlol/express-json-rpc-router/issues"
+  },
+  "homepage": "https://github.com/Valeronlol/express-json-rpc-router"
 }
