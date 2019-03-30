@@ -56,6 +56,13 @@ function setConfig(userConfig) {
   Object.assign(config, userConfig)
 }
 
+/**
+ * JSON RPC request handler
+ * @param {object} req
+ * @param {object} res
+ * @param {function} next
+ * @return {Promise}
+ */
 async function handleSingleReq(req, res, next) {
   const { id, method, jsonrpc } = req.body
   try {
@@ -87,10 +94,16 @@ async function handleSingleReq(req, res, next) {
   }
 }
 
+/**
+ * Batch rpc request handler
+ * @param {array} batchRpcData
+ * @return {Promise}
+ */
 function handleBatchReq(batchRpcData) {
   return Promise.all(
     batchRpcData.reduce((memo, rpcData) => {
-      if (!isNil(rpcData.id)) memo.push(handleSingleReq(rpcData))
+      const result = handleSingleReq(rpcData)
+      if (!isNil(rpcData.id)) memo.push(result)
       return memo
     }, [])
   )
