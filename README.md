@@ -5,7 +5,7 @@
 
 [JSON-RPC](https://www.jsonrpc.org/specification) official spec.
 
-Node.js JSON-RPCv2 router middleware.
+Extremely fast and simple Node.js JSON-RPCv2 router middleware.
 Handle incoming request and apply to controller functions.
 Validation available.
 
@@ -33,9 +33,10 @@ const bodyParser = require('body-parser')
 const jsonRouter = require('express-json-rpc-router')
 
 const controller = {
-    testMethod() {
-        // your code.
-        return { data: ['example data 1', 'example data 2'] }
+    testMethod(req, res, next) {
+        // you can access to json rpc params via req.body
+        console.log('username: ', req.body.params)
+        return ['example data 1', 'example data 2']
     }
 }
 
@@ -44,28 +45,40 @@ app.use(jsonRouter({ methods: controller }))
 app.listen(3000, () => console.log('Example app listening on port 3000'))
 ```
 
-and `curl -X POST http://localhost:3000 -H 'Content-Type: application/json' -d \
-'{
-   "jsonrpc": "2.0",
-   "result": ['example data 1', 'example data 2'],
-   "id": 1
- }`
-
-will return: `{
+and 
+```bash
+curl -X POST \
+  http://localhost:3000 \
+  -H 'Content-Type: application/json' \
+  -d '{
     "jsonrpc": "2.0",
-    "result": [
-        "example data 1",
-        "example data 2"
-    ],
+    "method": "testMethod",
+    "params": {
+        "username": "valeron"
+    },
     "id": 1
-}`
+ }'
+```
+will return:
+```json
+{
+  "jsonrpc": "2.0",
+  "result": [
+    "example data 1",
+    "example data 2"
+  ],
+  "id": 1
+}
+```
 
 ### With Validation and onError callback
 <!-- eslint-disable no-unused-vars -->
 
 ```js
 const controller = {
-    testMethod() {
+    testMethod(req, res, next) {
+        // you can access to json rpc params via req.body
+        console.log('username: ', req.body.params)
         return ['example data 1', 'example data 2']
     }
 }
@@ -89,39 +102,45 @@ app.use(jsonRouter({
 app.listen(3000, () => console.log('Example app listening on port 3000'))
 ```
 
-and `curl -X POST http://localhost:3000 -H 'Content-Type: application/json' -d \
-'{
-   "jsonrpc": "2.0",
-   "result": ['example data 1', 'example data 2'],
-   "id": 1
- }`
-
-will return: `{
+and 
+```bash
+curl -X POST \
+  http://localhost:3000 \
+  -H 'Content-Type: application/json' \
+  -d '{
     "jsonrpc": "2.0",
-    "error": {
-        "code": -32603,
-        "message": "something going wrong"
+    "method": "testMethod",
+    "params": {
+        "username": "valeron"
     },
     "id": 1
-}`
+ }'
+```
+will return:
+```json
+{
+  "jsonrpc": "2.0",
+  "error": {
+    "code": -32603,
+    "message": "something going wrong"
+  },
+  "id": 1
+}
+```
 
 #### Options
 
-The `json` function takes an optional `options` object that may contain any of
-the following keys:
+The `express-json-rpc-router` function takes an optional `options` object that may contain any of the following keys:
 
 ##### methods
-
 You can pass the object of your methods that will be called when a match is made via JSON-RPC `method` field.
 
 ##### beforeMethods
-
 Optionally you can pass the object of your validation methods, which will be called before main method with same name are called.
 
 ##### onError
-
-Optionally you can pass onError callback which will be called when json-rpc middleware error occurred.
-
+callback(err, req, res, next) {}
+Optionally you can pass onError callback which will be called when json-rpc middleware error occurred. First argument will be error and next default express arguments.
 
 ## License
 

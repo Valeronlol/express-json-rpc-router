@@ -29,11 +29,10 @@ const config = {
 module.exports = function(userConfig) {
   setConfig(userConfig)
   return async function(req, res, next) {
-    const rpcData = req.body
-    if (Array.isArray(rpcData)) {
-      res.send(await handleBatchReq(rpcData))
-    } else if (typeof rpcData === 'object') {
-      res.send(await handleSingleReq(rpcData))
+    if (Array.isArray(req.body)) {
+      res.send(await handleBatchReq(req, res, next))
+    } else if (typeof req.body === 'object') {
+      res.send(await handleSingleReq(req, res, next))
     } else {
       next(new Error('JSON-RPC router error: req.body is required. Ensure that you install body-parser and apply it before json-router.'))
     }
@@ -57,23 +56,24 @@ function setConfig(userConfig) {
   Object.assign(config, userConfig)
 }
 
-async function handleSingleReq({ id, method, params, jsonrpc } = {}) {
+async function handleSingleReq(req, res, next) {
+  const { id, method, jsonrpc } = req.body
   try {
     validateJsonRpcVersion(jsonrpc, VERSION)
     validateJsonRpcMethod(method, config.methods)
 
     if (isFunction(config.beforeMethods[method])) {
-      await config.beforeMethods[method](params)
+      await config.beforeMethods[method](req, res, next)
     }
 
-    const result = await config.methods[method](params)
+    const result = await config.methods[method](req, res, next)
 
     if (!isNil(id) ) {
       return { jsonrpc, result, id }
     }
   } catch (err) {
     if (isFunction(config.onError)) {
-      config.onError(err)
+      config.onError(err, req, res, next)
     }
 
     return {
