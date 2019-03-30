@@ -1,7 +1,7 @@
 {
   "name": "express-json-rpc-router",
   "description": "Json-rpc middleware router for express",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Valerii Kuzivanov <valerii.kuzivanov@gmail.com>",
   "license": "MIT",
   "repository": "express-json-rpc-router",
