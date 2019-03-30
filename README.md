@@ -1,8 +1,5 @@
 # JSON-RPC node.js implementation
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
-
 [JSON-RPC](https://www.jsonrpc.org/specification) official spec.
 
 Extremely fast and simple Node.js JSON-RPCv2 router middleware.
