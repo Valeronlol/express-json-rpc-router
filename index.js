@@ -3,7 +3,6 @@
  * Copyright(c) 2019 Valerii Kuzivanov.
  * MIT Licensed
  */
-
 const {
   validateJsonRpcMethod,
   validateJsonRpcVersion,
@@ -18,6 +17,7 @@ const VERSION = '2.0'
 const config = {
   methods: {},
   beforeMethods: {},
+  afterMethods: {},
   onError: null
 }
 
@@ -50,6 +50,9 @@ function setConfig(userConfig) {
   if ('beforeMethods' in userConfig && (typeof userConfig.beforeMethods !== 'object' || Array.isArray(userConfig.beforeMethods))) {
     throwRpcErr('JSON-RPC error: beforeMethods should be an object')
   }
+  if ('afterMethods' in userConfig && (typeof userConfig.afterMethods !== 'object' || Array.isArray(userConfig.afterMethods))) {
+    throwRpcErr('JSON-RPC error: afterMethods should be an object')
+  }
   if ('onError' in userConfig && typeof userConfig.onError !== 'function') {
     throwRpcErr('JSON-RPC error: onError should be a function')
   }
@@ -71,6 +74,10 @@ async function handleSingleReq(req, res, next) {
 
     if (isFunction(config.beforeMethods[method])) {
       await config.beforeMethods[method](req, res, next)
+    }
+
+    if (isFunction(config.afterMethods[method])) {
+      await config.afterMethods[method](req, res, next)
     }
 
     const result = await config.methods[method](req, res, next)
