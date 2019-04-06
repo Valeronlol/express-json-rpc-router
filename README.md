@@ -68,7 +68,7 @@ will return:
 }
 ```
 
-### With Validation and onError callback
+### With Validation, after hooks and onError callback
 <!-- eslint-disable no-unused-vars -->
 
 ```js
@@ -80,20 +80,25 @@ const controller = {
     }
 }
 
-const controllerValidation = {
+const beforeController = {
     testMethod() {
-        if (true) {
+        if (Math.random() >= 0.5) { // Random error
             throw new Error('something going wrong')
         }
     }
 }
 
+const afterController = {
+    testMethod: [() => console.log('testMethod executed 1!'), () => console.log('testMethod executed 2!')]
+}
+
 app.use(bodyParser.json())
 app.use(jsonRouter({
     methods: controller,
-    beforeMethods: controllerValidation,
-    onError() {
-        console.log('Send report!')
+    beforeMethods: beforeController,
+    afterMethods: afterController,
+    onError(err) {
+        console.log(err) // send report
     }
 }))
 app.listen(3000, () => console.log('Example app listening on port 3000'))
@@ -129,13 +134,16 @@ will return:
 
 The `express-json-rpc-router` function takes an optional `options` object that may contain any of the following keys:
 
-##### methods
+##### methods `type: Object<function>`
 You can pass the object of your methods that will be called when a match is made via JSON-RPC `method` field.
 
-##### beforeMethods
-Optionally you can pass the object of your validation methods, which will be called before main method with same name are called.
+##### beforeMethods `type: Object<function|Array<function>>`
+You can provide function or array of functions, which will be called before main method with same name are called. This is the best place for validation.
 
-##### onError
+##### afterMethods `type: Object<function|Array<function>>`
+You can provide function or array of functions, which will be called after main method with same name are called. This is the best place to write logs.
+
+##### onError `type: function`
 callback(err, req, res, next) {}
 Optionally you can pass onError callback which will be called when json-rpc middleware error occurred. First argument will be error and next default express arguments.
 
