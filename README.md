@@ -11,12 +11,12 @@ Validation available.
 ## Installation
 
 ```sh
-$ npm install express-json-rpc-router
+$ npm install body-parser express-json-rpc-router
 ```
 or
 
 ```sh
-$ yarn add express-json-rpc-router
+$ yarn add body-parser express-json-rpc-router
 ```
 
 ## Examples

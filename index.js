@@ -24,52 +24,30 @@ const config = {
 }
 
 /**
- *
- * @param {object} userConfig Custom user router configuration
- * @return {function} Express middleware
- */
-module.exports = function(userConfig) {
-  validateConfig(userConfig)
-  setConfig(config, userConfig)
-  return async function(req, res, next) {
-    if (Array.isArray(req.body)) {
-      res.send(await handleBatchReq(req, res, next))
-    } else if (typeof req.body === 'object') {
-      res.send(await handleSingleReq(req, res, next))
-    } else {
-      next(new Error('JSON-RPC router error: req.body is required. Ensure that you install body-parser and apply it before json-router.'))
-    }
-  }
-}
-
-/**
  * JSON RPC request handler
- * @param {object} req
- * @param {object} res
- * @param {function} next
+ * @param {object} body
  * @return {Promise}
  */
-async function handleSingleReq(req, res, next) {
-  const { id, method, jsonrpc } = req.body
+async function handleSingleReq(body) {
+  const { id, method, jsonrpc } = body
   try {
     validateJsonRpcVersion(jsonrpc, VERSION)
 
     validateJsonRpcMethod(method, config.methods)
 
-    if (beforeMethod = (config.beforeMethods[method])) await executeHook(beforeMethod, req, res)
+    if (beforeMethod = (config.beforeMethods[method])) await executeHook(beforeMethod, body.params)
 
-    const result = await config.methods[method](req, res, next)
+    const result = await config.methods[method](body)
 
-    if (afterMethod = (config.afterMethods[method])) await executeHook(afterMethod, req, res)
+    if (afterMethod = (config.afterMethods[method])) await executeHook(afterMethod, body.params)
 
     if (!isNil(id) ) return { jsonrpc, result, id }
   } catch (err) {
-    if (isFunction(config.onError)) config.onError(err, req, res, next)
-
+    if (isFunction(config.onError)) config.onError(err, body)
     return {
       jsonrpc: VERSION,
       error: {
-        code: err.code || INTERNAL_ERROR.code,
+        code: Number(err.code || err.status || INTERNAL_ERROR.code),
         message: err.message || INTERNAL_ERROR.message
       },
       id: id || null
@@ -79,15 +57,35 @@ async function handleSingleReq(req, res, next) {
 
 /**
  * Batch rpc request handler
- * @param {array} batchRpcData
+ * @param {Array} bachBody
  * @return {Promise}
  */
-function handleBatchReq(batchRpcData) {
+function handleBatchReq(bachBody) {
   return Promise.all(
-    batchRpcData.reduce((memo, rpcData) => {
-      const result = handleSingleReq(rpcData)
-      if (!isNil(rpcData.id)) memo.push(result)
+    bachBody.reduce((memo, body) => {
+      const result = handleSingleReq(body)
+      if (!isNil(body.id)) memo.push(result)
       return memo
     }, [])
   )
+}
+
+/**
+ *
+ * @param {object} userConfig Custom user router configuration
+ * @return {function} Express middleware
+ */
+module.exports = function(userConfig) {
+  validateConfig(userConfig)
+  setConfig(config, userConfig)
+  return async function(req, res, next) {
+    const rpcData = req.body
+    if (Array.isArray(rpcData)) {
+      res.send(await handleBatchReq(rpcData))
+    } else if (typeof rpcData === 'object') {
+      res.send(await handleSingleReq(rpcData))
+    } else {
+      next(new Error('JSON-RPC router error: req.body is required. Ensure that you install body-parser and apply it before json-router.'))
+    }
+  }
 }
