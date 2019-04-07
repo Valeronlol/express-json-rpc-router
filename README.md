@@ -138,10 +138,17 @@ The `express-json-rpc-router` function takes an optional `options` object that m
 You can pass the object of your methods that will be called when a match is made via JSON-RPC `method` field.
 
 ##### beforeMethods `type: Object<function|Array<function>>`
-You can provide function or array of functions, which will be called before main method with same name are called. This is the best place for validation.
+You can provide function or array of functions, which will be called before main method with same name are called. 
+This is the best place for validation.
+beforeMethods names should be the same as methods names.
+Request params will be passed as first argument.
 
 ##### afterMethods `type: Object<function|Array<function>>`
-You can provide function or array of functions, which will be called after main method with same name are called. This is the best place to write logs.
+You can provide function or array of functions, which will be called after main method with same name are called.
+This is the best place to write logs.
+afterMethods names should be the same as methods names.
+Method execution result will be passed as second argument.
+Request params will be passed as first argument.
 
 ##### onError `type: function`
 callback(err, req, res, next) {}

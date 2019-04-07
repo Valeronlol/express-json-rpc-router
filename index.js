@@ -39,7 +39,7 @@ async function handleSingleReq(body) {
 
     const result = await config.methods[method](body)
 
-    if (afterMethod = (config.afterMethods[method])) await executeHook(afterMethod, body.params)
+    if (afterMethod = (config.afterMethods[method])) await executeHook(afterMethod, body.params, result)
 
     if (!isNil(id) ) return { jsonrpc, result, id }
   } catch (err) {
