@@ -141,7 +141,7 @@ This is the best place for validation.
 beforeMethods names should be the same as methods names.
 Request params will be passed as first argument.
 
-##### afterMethods `type: Object<function(params)|Array<function(params, execResult)>>`
+##### afterMethods `type: Object<function(params, execResult)|Array<function(params, execResult)>>`
 You can provide function or array of functions, which will be called after main method with same name are called.
 This is the best place to write logs.
 afterMethods names should be the same as methods names.
