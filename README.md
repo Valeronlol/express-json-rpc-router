@@ -30,9 +30,8 @@ const bodyParser = require('body-parser')
 const jsonRouter = require('express-json-rpc-router')
 
 const controller = {
-    testMethod(req, res, next) {
-        // you can access to json rpc params via req.body
-        console.log('username: ', req.body.params)
+    testMethod({ username }) {
+        console.log('username: ', username)
         return ['example data 1', 'example data 2']
     }
 }
@@ -73,9 +72,8 @@ will return:
 
 ```js
 const controller = {
-    testMethod(req, res, next) {
-        // you can access to json rpc params via req.body
-        console.log('username: ', req.body.params)
+    testMethod({ username }) {
+        console.log('username: ', username)
         return ['example data 1', 'example data 2']
     }
 }
@@ -134,25 +132,25 @@ will return:
 
 The `express-json-rpc-router` function takes an optional `options` object that may contain any of the following keys:
 
-##### methods `type: Object<function>`
+##### methods `type: Object<function(params)>`
 You can pass the object of your methods that will be called when a match is made via JSON-RPC `method` field.
 
-##### beforeMethods `type: Object<function|Array<function>>`
+##### beforeMethods `type: Object<function(params)|Array<function(params)>>`
 You can provide function or array of functions, which will be called before main method with same name are called. 
 This is the best place for validation.
 beforeMethods names should be the same as methods names.
 Request params will be passed as first argument.
 
-##### afterMethods `type: Object<function|Array<function>>`
+##### afterMethods `type: Object<function(params)|Array<function(params, execResult)>>`
 You can provide function or array of functions, which will be called after main method with same name are called.
 This is the best place to write logs.
 afterMethods names should be the same as methods names.
 Method execution result will be passed as second argument.
 Request params will be passed as first argument.
 
-##### onError `type: function`
-callback(err, req, res, next) {}
-Optionally you can pass onError callback which will be called when json-rpc middleware error occurred. First argument will be error and next default express arguments.
+##### onError `type: function(err, params)`
+callback(err, params) {}
+Optionally you can pass onError callback which will be called when json-rpc middleware error occurred.
 
 ## License
 
