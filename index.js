@@ -75,10 +75,10 @@ function handleBatchReq(bachBody) {
  * @param {object} userConfig Custom user router configuration
  * @return {function} Express middleware
  */
-module.exports = function(userConfig) {
+module.exports = userConfig => {
   validateConfig(userConfig)
   setConfig(config, userConfig)
-  return async function(req, res, next) {
+  return async (req, res, next) => {
     const rpcData = req.body
     if (Array.isArray(rpcData)) {
       res.send(await handleBatchReq(rpcData))
