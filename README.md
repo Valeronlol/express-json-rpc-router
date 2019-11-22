@@ -11,12 +11,12 @@ Validation available.
 ## Installation
 
 ```sh
-$ npm install body-parser express-json-rpc-router
+$ npm install express express-json-rpc-router
 ```
 or
 
 ```sh
-$ yarn add body-parser express-json-rpc-router
+$ yarn add express express-json-rpc-router
 ```
 
 ## Examples
@@ -25,9 +25,9 @@ $ yarn add body-parser express-json-rpc-router
 <!-- eslint-disable no-unused-vars -->
 
 ```js
-const app = require('express')()
-const bodyParser = require('body-parser')
+const express = require('express')
 const jsonRouter = require('express-json-rpc-router')
+const app = express()
 
 const controller = {
     testMethod({ username }) {
@@ -36,7 +36,7 @@ const controller = {
     }
 }
 
-app.use(bodyParser.json())
+app.use(express.json())
 app.use(jsonRouter({ methods: controller }))
 app.listen(3000, () => console.log('Example app listening on port 3000'))
 ```

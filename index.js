@@ -29,29 +29,26 @@ const config = {
  * @return {Promise}
  */
 async function handleSingleReq(body) {
-  const { id, method, jsonrpc } = body
+  const { id, method, jsonrpc, params } = body
   try {
     validateJsonRpcVersion(jsonrpc, VERSION)
 
     validateJsonRpcMethod(method, config.methods)
 
-    if (beforeMethod = (config.beforeMethods[method])) await executeHook(beforeMethod, body.params)
+    if (beforeMethod = (config.beforeMethods[method])) await executeHook(beforeMethod, params)
 
-    const result = await config.methods[method](body)
+    const result = await config.methods[method](params)
 
-    if (afterMethod = (config.afterMethods[method])) await executeHook(afterMethod, body.params, result)
+    if (afterMethod = (config.afterMethods[method])) await executeHook(afterMethod, params, result)
 
     if (!isNil(id) ) return { jsonrpc, result, id }
   } catch (err) {
     if (isFunction(config.onError)) config.onError(err, body)
-    return {
-      jsonrpc: VERSION,
-      error: {
-        code: Number(err.code || err.status || INTERNAL_ERROR.code),
-        message: err.message || INTERNAL_ERROR.message
-      },
-      id: id || null
+    const error = {
+      code: Number(err.code || err.status || INTERNAL_ERROR.code),
+      message: err.message || INTERNAL_ERROR.message
     }
+    return { jsonrpc, error, id: id || null }
   }
 }
 
