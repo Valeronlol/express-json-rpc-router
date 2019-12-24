@@ -11,10 +11,10 @@ const {
   validateConfig,
   setConfig,
   executeHook
-} = require('./lib/helpers')
-const { INTERNAL_ERROR } = require('./lib/error-codes')
+} = require('./lib/helpers');
+const {INTERNAL_ERROR} = require('./lib/error-codes');
 
-const VERSION = '2.0'
+const VERSION = '2.0';
 
 /**
  *
@@ -27,7 +27,7 @@ module.exports = userConfig => {
     beforeMethods: {},
     afterMethods: {},
     onError: null
-  }
+  };
 
   /**
    * JSON RPC request handler
@@ -35,26 +35,26 @@ module.exports = userConfig => {
    * @return {Promise}
    */
   async function handleSingleReq(body) {
-    const { id, method, jsonrpc, params } = body
+    const {id, method, jsonrpc, params} = body;
     try {
-      validateJsonRpcVersion(jsonrpc, VERSION)
+      validateJsonRpcVersion(jsonrpc, VERSION);
 
-      validateJsonRpcMethod(method, config.methods)
+      validateJsonRpcMethod(method, config.methods);
 
-      if (beforeMethod = (config.beforeMethods[method])) await executeHook(beforeMethod, params)
+      if (beforeMethod = (config.beforeMethods[method])) await executeHook(beforeMethod, params);
 
-      const result = await config.methods[method](params)
+      const result = await config.methods[method](params);
 
-      if (afterMethod = (config.afterMethods[method])) await executeHook(afterMethod, params, result)
+      if (afterMethod = (config.afterMethods[method])) await executeHook(afterMethod, params, result);
 
-      if (!isNil(id) ) return { jsonrpc, result, id }
+      if (!isNil(id)) return {jsonrpc, result, id}
     } catch (err) {
-      if (isFunction(config.onError)) config.onError(err, body)
+      if (isFunction(config.onError)) config.onError(err, body);
       const error = {
         code: Number(err.code || err.status || INTERNAL_ERROR.code),
         message: err.message || INTERNAL_ERROR.message
-      }
-      return { jsonrpc, error, id: id || null }
+      };
+      return {jsonrpc, error, id: id || null}
     }
   }
 
@@ -65,18 +65,20 @@ module.exports = userConfig => {
    */
   function handleBatchReq(bachBody) {
     return Promise.all(
-        bachBody.reduce((memo, body) => {
-          const result = handleSingleReq(body)
-          if (!isNil(body.id)) memo.push(result)
-          return memo
-        }, [])
-    )
+      bachBody.reduce((memo, body) => {
+        const result = handleSingleReq(body);
+        if (!isNil(body.id)) memo.push(result);
+        return memo
+      }, [])
+    );
   }
 
-  validateConfig(userConfig)
-  setConfig(config, userConfig)
+  validateConfig(userConfig);
+
+  setConfig(config, userConfig);
+
   return async (req, res, next) => {
-    const rpcData = req.body
+    const rpcData = req.body;
     if (Array.isArray(rpcData)) {
       res.send(await handleBatchReq(rpcData))
     } else if (typeof rpcData === 'object') {
@@ -85,4 +87,4 @@ module.exports = userConfig => {
       next(new Error('JSON-RPC router error: req.body is required. Ensure that you install body-parser and apply it before json-router.'))
     }
   }
-}
+};
