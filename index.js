@@ -52,7 +52,8 @@ module.exports = userConfig => {
       if (isFunction(config.onError)) config.onError(err, body);
       const error = {
         code: Number(err.code || err.status || INTERNAL_ERROR.code),
-        message: err.message || INTERNAL_ERROR.message
+        message: err.message || INTERNAL_ERROR.message,
+        data: err.data
       };
       return {jsonrpc, error, id: id || null}
     }
