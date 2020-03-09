@@ -72,14 +72,16 @@ will return:
 
 ```js
 const controller = {
-    testMethod({ username }) {
+    // You have access to raw express req/res object as raw.res and raw.req 
+    testMethod({ username }, raw) {
         console.log('username: ', username)
         return ['example data 1', 'example data 2']
     }
 }
 
 const beforeController = {
-    testMethod() {
+    // You have access to raw express req/res object as raw.res and raw.req
+    testMethod(params, _, raw) {
         if (Math.random() >= 0.5) { // Random error
             throw new Error('something going wrong')
         }
@@ -87,7 +89,10 @@ const beforeController = {
 }
 
 const afterController = {
-    testMethod: [() => console.log('testMethod executed 1!'), () => console.log('testMethod executed 2!')]
+    testMethod: [
+      // You have access to result and to raw express req/res object as raw.res and raw.req.
+      (params, result, raw) => console.log('testMethod executed 1!'), () => console.log('testMethod executed 2!')
+    ]
 }
 
 app.use(bodyParser.json())
@@ -127,6 +132,12 @@ will return:
   "id": 1
 }
 ```
+
+### Changelog:
+    - v1.2.0
+    * Added raw { req, res } native express object to controller and hooks as last argument.
+    * Passed next arguments: `params, null, raw` to beforeController actions and `params, result, raw` to afterController
+    * Passed additional second argument `params, raw` to controller actions
 
 #### Options
 
