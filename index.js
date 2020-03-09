@@ -34,18 +34,18 @@ module.exports = userConfig => {
    * @param {object} body
    * @return {Promise}
    */
-  async function handleSingleReq(body) {
+  async function handleSingleReq(body, raw) {
     const {id, method, jsonrpc, params} = body;
     try {
       validateJsonRpcVersion(jsonrpc, VERSION);
 
       validateJsonRpcMethod(method, config.methods);
 
-      if (beforeMethod = (config.beforeMethods[method])) await executeHook(beforeMethod, params);
+      if (beforeMethod = (config.beforeMethods[method])) await executeHook(beforeMethod, params, null, raw);
 
-      const result = await config.methods[method](params);
+      const result = await config.methods[method](params, raw);
 
-      if (afterMethod = (config.afterMethods[method])) await executeHook(afterMethod, params, result);
+      if (afterMethod = (config.afterMethods[method])) await executeHook(afterMethod, params, result, raw);
 
       if (!isNil(id)) return {jsonrpc, result, id}
     } catch (err) {
@@ -63,10 +63,10 @@ module.exports = userConfig => {
    * @param {Array} bachBody
    * @return {Promise}
    */
-  function handleBatchReq(bachBody) {
+  function handleBatchReq(bachBody, raw) {
     return Promise.all(
       bachBody.reduce((memo, body) => {
-        const result = handleSingleReq(body);
+        const result = handleSingleReq(body, raw);
         if (!isNil(body.id)) memo.push(result);
         return memo
       }, [])
@@ -80,9 +80,9 @@ module.exports = userConfig => {
   return async (req, res, next) => {
     const rpcData = req.body;
     if (Array.isArray(rpcData)) {
-      res.send(await handleBatchReq(rpcData))
+      res.send(await handleBatchReq(rpcData, { req, res }))
     } else if (typeof rpcData === 'object') {
-      res.send(await handleSingleReq(rpcData))
+      res.send(await handleSingleReq(rpcData, { req, res }))
     } else {
       next(new Error('JSON-RPC router error: req.body is required. Ensure that you install body-parser and apply it before json-router.'))
     }
