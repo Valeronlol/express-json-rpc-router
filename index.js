@@ -53,8 +53,8 @@ module.exports = userConfig => {
       const error = {
         code: Number(err.code || err.status || INTERNAL_ERROR.code),
         message: err.message || INTERNAL_ERROR.message,
-        data: err.data
       };
+      if (err && err.data) error.data = err.data;
       return {jsonrpc, error, id: id || null}
     }
   }

@@ -83,7 +83,9 @@ const beforeController = {
     // You have access to raw express req/res object as raw.res and raw.req
     testMethod(params, _, raw) {
         if (Math.random() >= 0.5) { // Random error
-            throw new Error('something going wrong')
+            const error = new Error('Something going wrong')
+            error.data = { hello: 'world' } // its optional
+            throw error
         }
     }
 }
@@ -127,7 +129,8 @@ will return:
   "jsonrpc": "2.0",
   "error": {
     "code": -32603,
-    "message": "something going wrong"
+    "message": "Something going wrong",
+    "data": { "hello": "world" }
   },
   "id": 1
 }
@@ -138,7 +141,8 @@ will return:
     * Added raw { req, res } native express object to controller and hooks as last argument.
     * Passed next arguments: `params, null, raw` to beforeController actions and `params, result, raw` to afterController
     * Passed additional second argument `params, raw` to controller actions
-
+    - v1.3.0
+    * Added optional err.data payload to comply with JSON RPC specification: "5.1 Error object".
 #### Options
 
 The `express-json-rpc-router` function takes an optional `options` object that may contain any of the following keys:
