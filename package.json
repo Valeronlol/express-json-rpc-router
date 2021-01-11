@@ -6,6 +6,10 @@
   "license": "MIT",
   "repository": "express-json-rpc-router",
   "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "npm run lint"
+  },
   "devDependencies": {
     "eslint": "5.15.3",
     "eslint-config-standard": "12.0.0",
