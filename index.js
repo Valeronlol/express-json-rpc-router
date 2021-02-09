@@ -35,7 +35,7 @@ module.exports = userConfig => {
    * @return {Promise}
    */
   async function handleSingleReq(body, raw) {
-    const {id, method, jsonrpc, params} = body;
+    const {id, method, jsonrpc, params = {}} = body;
     try {
       validateJsonRpcVersion(jsonrpc, VERSION);
 
