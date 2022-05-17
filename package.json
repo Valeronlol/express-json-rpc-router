@@ -7,17 +7,13 @@
   "repository": "express-json-rpc-router",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint .",
-    "test": "npm run lint"
+    "lint": "eslint ./**/*.js ./*.js",
+    "lint:fix": "eslint ./**/*.js ./*.js --fix"
   },
   "devDependencies": {
-    "eslint": "5.15.3",
-    "eslint-config-standard": "12.0.0",
-    "eslint-plugin-import": "2.16.0",
-    "eslint-plugin-markdown": "1.0.0",
-    "eslint-plugin-node": "8.0.1",
-    "eslint-plugin-promise": "4.0.1",
-    "eslint-plugin-standard": "4.0.0"
+    "eslint": "^8.15.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0"
   },
   "engines": {
     "node": ">= 8.0"
