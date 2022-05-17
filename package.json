@@ -8,12 +8,14 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint ./**/*.js ./*.js",
-    "lint:fix": "eslint ./**/*.js ./*.js --fix"
+    "lint:fix": "eslint ./**/*.js ./*.js --fix",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "eslint": "^8.15.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.26.0"
+    "eslint-plugin-import": "^2.26.0",
+    "husky": "^8.0.1"
   },
   "engines": {
     "node": ">= 8.0"
